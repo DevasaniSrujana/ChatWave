@@ -3,12 +3,13 @@ import dotenv from "dotenv";
 dotenv.config();
 import { createServer } from "http";
 import { Server } from "socket.io";
+const FRONTEND_URLS = [process.env.CLIENT_URL, "http://localhost:5173"];
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL,
+    origin: FRONTEND_URLS,
   },
 });
 const userSocketMap = {};
