@@ -51,7 +51,7 @@ const Chat = () => {
     >
       {/* Sidebar: full width on mobile, fixed column on md+ */}
       <div
-        className={`w-full md:w-auto md:flex-shrink-0 ${
+        className={`w-full md:w-auto md:shrink-0 ${
           selectedUser ? "hidden md:block" : "block"
         }`}
       >
