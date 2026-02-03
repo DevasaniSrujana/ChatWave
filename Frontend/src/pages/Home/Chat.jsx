@@ -1,8 +1,8 @@
 import { useState } from "react";
-import SidebarChat from "../../components/SidebarChat";
-import MessageContainer from "../../components/messageContainer";
-import ThemeToggle from "../../components/ThemeToggle";
-import ChatWindow from "../../components/ChatWindow";
+import SidebarChat from "../../components/SidebarChat.jsx";
+import MessageContainer from "../../components/MessageContainer.jsx";
+import ThemeToggle from "../../components/ThemeToggle.jsx";
+import ChatWindow from "../../components/ChatWindow.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { initializeSocket } from "../../socket/socket.js";
@@ -28,7 +28,9 @@ const Chat = () => {
     socket.on("newMessage", (message) => {
       const selectedId = selectedUser?._id ? String(selectedUser._id) : null;
       const senderId = message?.senderId ? String(message.senderId) : null;
-      const receiverId = message?.receiverId ? String(message.receiverId) : null;
+      const receiverId = message?.receiverId
+        ? String(message.receiverId)
+        : null;
 
       if (!selectedId) return;
       if (senderId === selectedId || receiverId === selectedId) {
