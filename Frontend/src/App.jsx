@@ -4,7 +4,8 @@ import Login from "./pages/Authentication/Login";
 import Signup from "./pages/Authentication/Signup";
 import Chat from "./pages/Home/Chat";
 import { Toaster } from "react-hot-toast";
-import ProtectedRoutes from "./components/protectedRoutes";
+import ProtectedRoutes from "./components/ProtectedRoutes";
+
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getProfileThunk } from "./redux/features/user/user.thunk";
