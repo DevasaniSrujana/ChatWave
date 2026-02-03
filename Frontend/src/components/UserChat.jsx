@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { setSelectedUser } from "../redux/features/user/user.slice";
+import { setSelectedUser } from "../redux/features/user/user.slice.js";
 import { getAvatarUrl } from "./utilities/avatarUrl.js";
 
 const UserChat = ({ userDetails }) => {

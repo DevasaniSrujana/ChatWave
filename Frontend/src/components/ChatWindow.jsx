@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
-import Message from "./Message";
+import Message from "./Message.jsx";
 import { useEffect, useRef } from "react";
-import { getMessageThunk } from "../redux/features/message/message.thunk";
-import SendMessage from "./sendMessage";
+import { getMessageThunk } from "../redux/features/message/message.thunk.js";
+import SendMessage from "./SendMessage.jsx";
 import { setSelectedUser } from "../redux/features/user/user.slice.js";
 import { getAvatarUrl } from "./utilities/avatarUrl.js";
 
@@ -36,7 +36,10 @@ const ChatWindow = () => {
 
   useEffect(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+      messagesEndRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
     }
   }, [messages]);
 
