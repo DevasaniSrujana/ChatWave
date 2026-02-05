@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 
 const Message = ({ messageDetails }) => {
   const { userProfile, selectedUser } = useSelector((state) => state.user);
+  const { onlineUsers } = useSelector((state) => state.socket);
   if (!messageDetails) return null;
   const formatTime = (time) =>
     new Date(time).toLocaleTimeString([], {
@@ -13,7 +14,7 @@ const Message = ({ messageDetails }) => {
     <div
       className={`chat ${userProfile?._id === messageDetails?.senderId ? "chat-end" : "chat-start"}`}
     >
-      <div className="chat-image avatar">
+      <div className={`chat-image avatar ${onlineUsers && "online"}`}>
         <div className="w-10 rounded-full">
           <img
             alt="Tailwind CSS chat bubble component"
