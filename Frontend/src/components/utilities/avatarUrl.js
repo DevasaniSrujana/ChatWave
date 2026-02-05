@@ -4,9 +4,8 @@ export const getAvatarUrl = (avatar) => {
     return avatar;
   }
   if (avatar.startsWith("/uploads")) {
-    const origin = import.meta.env.VITE_DB_ORIGIN || "";
+    const origin = import.meta.env.VITE_DB_URL || "";
     return `${origin}${avatar}`;
   }
   return avatar;
 };
-

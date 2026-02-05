@@ -20,18 +20,18 @@ let PORT = getPort(process.env.PORT);
 
 connectDB();
 
-// ✅ CORS middleware
-const allowedOrigins = [
-  process.env.CLIENT_URL, // deployed frontend
-  "http://localhost:5173", // local frontend
-];
+const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5173"];
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // allow Postman, curl, etc
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      callback(new Error(`CORS policy: Origin ${origin} not allowed`));
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
   }),

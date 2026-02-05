@@ -10,26 +10,24 @@ export const socketSlice = createSlice({
   initialState,
   reducers: {
     initializeSocket: (state, action) => {
-      if (!action.payload) return; // no user ID, don’t connect
-      if (state.socket) return; // socket already exists
+      if (!action.payload) return;
+      if (state.socket) return;
 
-      const socket = io(import.meta.env.VITE_DB_ORIGIN, {
+      const socket = io(import.meta.env.VITE_API_URL, {
         query: { userId: action.payload },
+        transports: ["websocket"],
+        withCredentials: true,
       });
 
       socket.on("connect", () => {
+        console.log("Socket connected:", socket.id);
       });
-    },
 
-    checkOnlineUsers: (state, action) => {
-      state.onlineUsers = action.payload;
-    },
-    disconnectSocket: (state) => {
-      if (state.socket) {
-        state.socket.disconnect();
-        state.socket = null;
-      }
-      state.onlineUsers = [];
+      socket.on("onlineUsers", (users) => {
+        state.onlineUsers = users;
+      });
+
+      state.socket = socket; // ✅ STORE SOCKET
     },
   },
 });
