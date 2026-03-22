@@ -4,7 +4,12 @@
  *
  * In production builds, localhost URLs are ignored — the browser on Vercel
  * cannot reach your machine; set VITE_API_URL to your Render HTTPS URL.
+ *
+ * If the build has no valid URL (or only localhost), production falls back to
+ * the deployed Render service below.
  */
+const PRODUCTION_RENDER_ORIGIN = "https://chatwave-1-riu4.onrender.com";
+
 function normalize(raw) {
   if (raw == null) return "";
   const s = String(raw).trim().replace(/^["']|["']$/g, "");
@@ -38,6 +43,13 @@ export function getServerOrigin() {
       continue;
     }
     return url;
+  }
+  if (import.meta.env.PROD) {
+    console.warn(
+      "[ChatWave] No valid VITE_API_URL in this build; using Render origin:",
+      PRODUCTION_RENDER_ORIGIN,
+    );
+    return PRODUCTION_RENDER_ORIGIN;
   }
   return "";
 }

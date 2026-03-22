@@ -18,16 +18,13 @@ const raw =
 const url = String(raw).trim().replace(/^["']|["']$/g, "");
 
 if (!url) {
-  console.error(`
-[ChatWave] Vercel Production build blocked: no API URL.
+  console.warn(`
+[ChatWave] Vercel Production: VITE_API_URL / VITE_DB_URL not set at build time.
+The app will use the bundled Render origin. For clarity, set in Vercel → Environment Variables:
 
-In Vercel → Project → Settings → Environment Variables (Production), add:
-
-  VITE_API_URL = https://YOUR-SERVICE.onrender.com
-
-(no /api/v1, no trailing slash, must be https — not localhost)
+  VITE_API_URL = https://chatwave-1-riu4.onrender.com
 `);
-  process.exit(1);
+  process.exit(0);
 }
 
 if (/localhost|127\.0\.0\.1/i.test(url)) {
