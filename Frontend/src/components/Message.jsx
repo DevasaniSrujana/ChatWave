@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import { isUserOnline } from "./utilities/onlineStatus.js";
+import { getAvatarUrl } from "./utilities/avatarUrl.js";
 
 const Message = ({ messageDetails }) => {
   const { userProfile, selectedUser } = useSelector((state) => state.user);
@@ -22,11 +23,9 @@ const Message = ({ messageDetails }) => {
         <div className="w-10 rounded-full">
           <img
             alt="Tailwind CSS chat bubble component"
-            src={
-              userProfile?._id === messageDetails?.senderId
-                ? userProfile?.avatar
-                : selectedUser?.avatar
-            }
+            src={getAvatarUrl(
+              fromMe ? userProfile?.avatar : selectedUser?.avatar,
+            )}
           />
         </div>
       </div>
