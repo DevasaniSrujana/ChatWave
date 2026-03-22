@@ -13,7 +13,9 @@ export const messageSlice = createSlice({
       const incomingId = action.payload?._id;
       if (
         incomingId &&
-        state.messages?.some((m) => m && typeof m === "object" && m._id === incomingId)
+        state.messages?.some(
+          (m) => m && typeof m === "object" && m._id === incomingId,
+        )
       ) {
         return;
       }
@@ -34,7 +36,9 @@ export const messageSlice = createSlice({
       const incomingId = incoming?._id;
       if (
         incomingId &&
-        state.messages?.some((m) => m && typeof m === "object" && m._id === incomingId)
+        state.messages?.some(
+          (m) => m && typeof m === "object" && m._id === incomingId,
+        )
       ) {
         state.buttonLoading = false;
         return;
@@ -50,7 +54,7 @@ export const messageSlice = createSlice({
       state.buttonLoading = true;
     });
     builder.addCase(getMessageThunk.fulfilled, (state, action) => {
-      state.messages = action.payload;
+      state.messages = Array.isArray(action.payload) ? action.payload : [];
       state.buttonLoading = false;
     });
     builder.addCase(getMessageThunk.rejected, (state) => {

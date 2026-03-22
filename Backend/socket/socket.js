@@ -2,7 +2,11 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 
-const FRONTEND_URLS = [process.env.CLIENT_URL, "http://localhost:5173"];
+const FRONTEND_URLS = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+].filter(Boolean);
 
 const app = express();
 const server = createServer(app);

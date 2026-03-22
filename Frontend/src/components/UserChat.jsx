@@ -1,12 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedUser } from "../redux/features/user/user.slice.js";
 import { getAvatarUrl } from "./utilities/avatarUrl.js";
+import { isUserOnline } from "./utilities/onlineStatus.js";
 
 const UserChat = ({ userDetails }) => {
   const dispatch = useDispatch();
   const { selectedUser } = useSelector((state) => state.user);
   const { onlineUsers } = useSelector((state) => state.socket);
-  const isUserOnline = onlineUsers?.includes(userDetails?._id);
+  const userOnline = isUserOnline(onlineUsers, userDetails?._id);
 
   const handleClick = () => {
     dispatch(setSelectedUser(userDetails));
@@ -16,7 +17,7 @@ const UserChat = ({ userDetails }) => {
       onClick={handleClick}
       className={`flex items-center gap-3 h-18 p-2 border-b  border-b-base-300 bg-base-50 hover:bg-base-300 cursor-pointer transition ${userDetails?._id === selectedUser?._id && "bg-base-300"}`}
     >
-      <div className={`avatar ${isUserOnline && "avatar-online"}`}>
+      <div className={`avatar ${userOnline ? "avatar-online" : ""}`}>
         <div className="mask mask-squircle w-12 h-12">
           <img src={getAvatarUrl(userDetails?.avatar)} alt="user" />
         </div>

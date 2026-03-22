@@ -20,6 +20,7 @@ const Chat = () => {
     if (!isAuthenticated || !userProfile?._id) return;
 
     const socket = initializeSocket(userProfile._id);
+    if (!socket) return;
 
     socket.on("onlineUsers", (users) => {
       dispatch(checkOnlineUsers(users));
@@ -39,8 +40,8 @@ const Chat = () => {
     });
 
     return () => {
-      socket.off("onlineUsers");
-      socket.off("newMessage");
+      socket?.off("onlineUsers");
+      socket?.off("newMessage");
     };
   }, [isAuthenticated, userProfile?._id, selectedUser?._id, dispatch]);
 

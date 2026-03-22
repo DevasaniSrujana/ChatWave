@@ -13,14 +13,13 @@ const initialState = {
   buttonLoading: false,
   userProfile: null,
   otherUsers: null,
-  selectedUser: JSON.parse(localStorage.getItem("selectedUser")),
+  selectedUser: null,
 };
 export const userSlice = createSlice({
   name: "userSlice",
   initialState,
   reducers: {
     setSelectedUser: (state, action) => {
-      localStorage.setItem("selectedUser", JSON.stringify(action.payload));
       state.selectedUser = action.payload;
     },
   },
@@ -33,6 +32,9 @@ export const userSlice = createSlice({
       state.userProfile = action.payload?.responseData?.user;
       state.isAuthenticated = true;
       state.buttonLoading = false;
+      if (action.payload?.responseData?.token) {
+        localStorage.setItem("token", action.payload.responseData.token);
+      }
     });
     builder.addCase(loginThunk.rejected, (state) => {
       state.buttonLoading = false;
@@ -45,6 +47,9 @@ export const userSlice = createSlice({
       state.userProfile = action.payload?.responseData?.user;
       state.isAuthenticated = true;
       state.buttonLoading = false;
+      if (action.payload?.responseData?.token) {
+        localStorage.setItem("token", action.payload.responseData.token);
+      }
     });
     builder.addCase(registerThunk.rejected, (state) => {
       state.buttonLoading = false;
@@ -78,7 +83,10 @@ export const userSlice = createSlice({
     });
 
     builder.addCase(getProfileThunk.rejected, (state) => {
+      state.isAuthenticated = false;
       state.screenLoading = false;
+      state.userProfile = null;
+      localStorage.removeItem("token");
     });
 
     // Other Users Thunk

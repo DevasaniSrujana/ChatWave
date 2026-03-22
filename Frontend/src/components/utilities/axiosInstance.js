@@ -1,7 +1,15 @@
 import axios from "axios";
+import { getServerOrigin } from "./serverOrigin.js";
+
+const origin = getServerOrigin();
+if (!origin && import.meta.env.DEV) {
+  console.error(
+    "ChatWave: Set VITE_API_URL or VITE_DB_ORIGIN in Frontend/.env for the API base URL.",
+  );
+}
 
 export const axiosInstance = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL}/api/v1`,
+  baseURL: origin ? `${origin}/api/v1` : "/api/v1",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",

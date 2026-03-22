@@ -5,6 +5,7 @@ import { getMessageThunk } from "../redux/features/message/message.thunk.js";
 import SendMessage from "./SendMessage.jsx";
 import { setSelectedUser } from "../redux/features/user/user.slice.js";
 import { getAvatarUrl } from "./utilities/avatarUrl.js";
+import { isUserOnline } from "./utilities/onlineStatus.js";
 
 const ChatWindow = () => {
   const dispatch = useDispatch();
@@ -12,7 +13,7 @@ const ChatWindow = () => {
 
   const { messages } = useSelector((state) => state.message);
   const { onlineUsers } = useSelector((state) => state.socket);
-  const isUserOnline = onlineUsers?.includes(selectedUser?._id);
+  const peerOnline = isUserOnline(onlineUsers, selectedUser?._id);
   const messagesEndRef = useRef(null);
 
   const formatDate = (dateString) => {
@@ -46,8 +47,8 @@ const ChatWindow = () => {
   const renderedMessages = [];
   let lastDate = null;
 
-  messages
-    ?.filter((msg) => msg && typeof msg === "object")
+  (Array.isArray(messages) ? messages : [])
+    .filter((msg) => msg && typeof msg === "object")
     .forEach((message, index) => {
       const msgDate = message.createdAt ? formatDate(message.createdAt) : null;
       if (msgDate && msgDate !== lastDate) {
@@ -89,7 +90,7 @@ const ChatWindow = () => {
           <span className="text-base font-semibold">
             {selectedUser.fullname}
           </span>
-          {isUserOnline && (
+          {peerOnline && (
             <span className="text-sm text-[#009435]">Online</span>
           )}
         </div>

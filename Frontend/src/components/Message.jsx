@@ -1,9 +1,15 @@
 import { useSelector } from "react-redux";
+import { isUserOnline } from "./utilities/onlineStatus.js";
 
 const Message = ({ messageDetails }) => {
   const { userProfile, selectedUser } = useSelector((state) => state.user);
   const { onlineUsers } = useSelector((state) => state.socket);
   if (!messageDetails) return null;
+
+  const fromMe =
+    String(userProfile?._id ?? "") === String(messageDetails?.senderId ?? "");
+  const avatarUserId = fromMe ? userProfile?._id : selectedUser?._id;
+  const avatarOnline = isUserOnline(onlineUsers, avatarUserId);
   const formatTime = (time) =>
     new Date(time).toLocaleTimeString([], {
       hour: "2-digit",
@@ -11,10 +17,8 @@ const Message = ({ messageDetails }) => {
     });
 
   return (
-    <div
-      className={`chat ${userProfile?._id === messageDetails?.senderId ? "chat-end" : "chat-start"}`}
-    >
-      <div className={`chat-image avatar ${onlineUsers && "online"}`}>
+    <div className={`chat ${fromMe ? "chat-end" : "chat-start"}`}>
+      <div className={`chat-image avatar ${avatarOnline ? "online" : ""}`}>
         <div className="w-10 rounded-full">
           <img
             alt="Tailwind CSS chat bubble component"
