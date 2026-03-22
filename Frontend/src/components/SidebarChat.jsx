@@ -20,6 +20,20 @@ const SidebarChat = () => {
     dispatch(getOtherUsersThunk());
   }, [dispatch]);
 
+  useEffect(() => {
+    const refetch = () => {
+      if (document.visibilityState === "visible") {
+        dispatch(getOtherUsersThunk());
+      }
+    };
+    document.addEventListener("visibilitychange", refetch);
+    window.addEventListener("focus", refetch);
+    return () => {
+      document.removeEventListener("visibilitychange", refetch);
+      window.removeEventListener("focus", refetch);
+    };
+  }, [dispatch]);
+
   const handleLogout = async () => {
     let result = await dispatch(logoutThunk());
     // ensure the real socket.io-client connection is closed, then clear Redux socket state

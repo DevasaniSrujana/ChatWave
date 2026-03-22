@@ -33,10 +33,15 @@ export const sendMessage = asyncHandler(async (req, res, next) => {
   const receiverSocketIds = getId(String(receiverId));
   const senderSocketIds = getId(String(senderId));
 
+  const messagePayload =
+    typeof newMessage?.toObject === "function"
+      ? newMessage.toObject()
+      : JSON.parse(JSON.stringify(newMessage));
+
   const emitToSockets = (socketIds) => {
     if (!socketIds) return;
     socketIds.forEach((socketId) => {
-      io.to(socketId).emit("newMessage", newMessage);
+      io.to(socketId).emit("newMessage", messagePayload);
     });
   };
 

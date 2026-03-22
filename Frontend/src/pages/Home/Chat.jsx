@@ -1,19 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import SidebarChat from "../../components/SidebarChat.jsx";
 import MessageContainer from "../../components/MessageContainer.jsx";
 import ThemeToggle from "../../components/ThemeToggle.jsx";
 import ChatWindow from "../../components/ChatWindow.jsx";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
 import { initializeSocket } from "../../socket/socket.js";
 import { checkOnlineUsers } from "../../redux/features/socket/socket.slice.js";
 import { addIncomingMessage } from "../../redux/features/message/message.slice.js";
+import { getOtherUsersThunk } from "../../redux/features/user/user.thunk.js";
 
 const Chat = () => {
   const [chatTheme, setChatTheme] = useState("corporate");
   const { selectedUser, isAuthenticated, userProfile } = useSelector(
     (state) => state.user,
   );
+
+  const selectedUserRef = useRef(selectedUser);
+  const userProfileRef = useRef(userProfile);
+
+  useEffect(() => {
+    selectedUserRef.current = selectedUser;
+    userProfileRef.current = userProfile;
+  }, [selectedUser, userProfile]);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -22,28 +30,52 @@ const Chat = () => {
     const socket = initializeSocket(userProfile._id);
     if (!socket) return;
 
-    socket.on("onlineUsers", (users) => {
+    const onOnlineUsers = (users) => {
       dispatch(checkOnlineUsers(users));
-    });
+    };
 
-    socket.on("newMessage", (message) => {
-      const selectedId = selectedUser?._id ? String(selectedUser._id) : null;
-      const senderId = message?.senderId ? String(message.senderId) : null;
-      const receiverId = message?.receiverId
-        ? String(message.receiverId)
+    const onNewMessage = (message) => {
+      const peerId = selectedUserRef.current?._id
+        ? String(selectedUserRef.current._id)
         : null;
+      const myId = userProfileRef.current?._id
+        ? String(userProfileRef.current._id)
+        : null;
+      if (!peerId || !myId) return;
 
-      if (!selectedId) return;
-      if (senderId === selectedId || receiverId === selectedId) {
-        dispatch(addIncomingMessage(message));
-      }
-    });
+      const senderId =
+        message?.senderId != null ? String(message.senderId) : null;
+      const receiverId =
+        message?.receiverId != null ? String(message.receiverId) : null;
+      if (!senderId || !receiverId) return;
+
+      const involvesPeer = senderId === peerId || receiverId === peerId;
+      const involvesMe = senderId === myId || receiverId === myId;
+      if (!involvesPeer || !involvesMe) return;
+
+      dispatch(addIncomingMessage(message));
+    };
+
+    const onConnect = () => {
+      dispatch(getOtherUsersThunk());
+    };
+
+    const onConnectError = (err) => {
+      if (import.meta.env.DEV) console.warn("Socket connect_error:", err?.message);
+    };
+
+    socket.on("onlineUsers", onOnlineUsers);
+    socket.on("newMessage", onNewMessage);
+    socket.on("connect", onConnect);
+    socket.on("connect_error", onConnectError);
 
     return () => {
-      socket?.off("onlineUsers");
-      socket?.off("newMessage");
+      socket.off("onlineUsers", onOnlineUsers);
+      socket.off("newMessage", onNewMessage);
+      socket.off("connect", onConnect);
+      socket.off("connect_error", onConnectError);
     };
-  }, [isAuthenticated, userProfile?._id, selectedUser?._id, dispatch]);
+  }, [isAuthenticated, userProfile?._id, dispatch]);
 
   return (
     <div
