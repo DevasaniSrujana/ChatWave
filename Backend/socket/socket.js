@@ -1,12 +1,12 @@
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import {
+  getAllowedOriginsSet,
+  isAllowedOrigin,
+} from "../utilities/allowedOrigins.js";
 
-const FRONTEND_URLS = [
-  process.env.CLIENT_URL,
-  "http://localhost:5173",
-  "http://127.0.0.1:5173",
-].filter(Boolean);
+const allowedOriginsSet = getAllowedOriginsSet();
 
 const app = express();
 const server = createServer(app);
@@ -14,8 +14,8 @@ const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // allow non-browser requests
-      if (FRONTEND_URLS.includes(origin)) {
+      if (!origin) return callback(null, true);
+      if (isAllowedOrigin(origin, allowedOriginsSet)) {
         callback(null, true);
       } else {
         callback(new Error("CORS not allowed"));

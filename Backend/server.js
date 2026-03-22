@@ -10,6 +10,10 @@ import { app, server } from "./socket/socket.js";
 import userRoute from "./routes/user.route.js";
 import messageRoute from "./routes/message.route.js";
 import errorMiddleware from "./middlewares/error.middleware.js";
+import {
+  getAllowedOriginsSet,
+  isAllowedOrigin,
+} from "./utilities/allowedOrigins.js";
 
 const DEFAULT_PORT = 5000;
 const getPort = (value) => {
@@ -20,17 +24,14 @@ let PORT = getPort(process.env.PORT);
 
 connectDB();
 
-const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5173"];
+const allowedOriginsSet = getAllowedOriginsSet();
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
+      if (isAllowedOrigin(origin, allowedOriginsSet)) {
         return callback(null, true);
       }
-
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,

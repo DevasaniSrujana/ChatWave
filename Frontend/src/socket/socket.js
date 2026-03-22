@@ -29,7 +29,7 @@ export const initializeSocket = (userId) => {
       path: "/socket.io/",
       query: { userId: sid },
       transports: ["polling", "websocket"],
-      withCredentials: true,
+      withCredentials: false,
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,

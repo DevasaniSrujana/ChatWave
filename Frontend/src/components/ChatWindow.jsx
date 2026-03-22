@@ -36,6 +36,27 @@ const ChatWindow = () => {
   }, [selectedUser?._id, dispatch]);
 
   useEffect(() => {
+    const id = selectedUser?._id;
+    if (!id) return;
+
+    let lastFetch = 0;
+    const refetch = () => {
+      if (document.visibilityState !== "visible") return;
+      const now = Date.now();
+      if (now - lastFetch < 2000) return;
+      lastFetch = now;
+      dispatch(getMessageThunk({ receiverId: id }));
+    };
+
+    document.addEventListener("visibilitychange", refetch);
+    window.addEventListener("focus", refetch);
+    return () => {
+      document.removeEventListener("visibilitychange", refetch);
+      window.removeEventListener("focus", refetch);
+    };
+  }, [selectedUser?._id, dispatch]);
+
+  useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({
         behavior: "smooth",

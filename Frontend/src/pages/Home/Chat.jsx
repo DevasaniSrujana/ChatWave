@@ -8,6 +8,8 @@ import { initializeSocket } from "../../socket/socket.js";
 import { checkOnlineUsers } from "../../redux/features/socket/socket.slice.js";
 import { addIncomingMessage } from "../../redux/features/message/message.slice.js";
 import { getOtherUsersThunk } from "../../redux/features/user/user.thunk.js";
+import { getMessageThunk } from "../../redux/features/message/message.thunk.js";
+import { store } from "../../redux/store.js";
 
 const Chat = () => {
   const [chatTheme, setChatTheme] = useState("corporate");
@@ -56,8 +58,12 @@ const Chat = () => {
       dispatch(addIncomingMessage(message));
     };
 
-    const onConnect = () => {
+    const pullLatestFromApi = () => {
       dispatch(getOtherUsersThunk());
+      const peerId = store.getState().user.selectedUser?._id;
+      if (peerId) {
+        dispatch(getMessageThunk({ receiverId: peerId }));
+      }
     };
 
     const onConnectError = (err) => {
@@ -66,13 +72,15 @@ const Chat = () => {
 
     socket.on("onlineUsers", onOnlineUsers);
     socket.on("newMessage", onNewMessage);
-    socket.on("connect", onConnect);
+    socket.on("connect", pullLatestFromApi);
+    socket.on("reconnect", pullLatestFromApi);
     socket.on("connect_error", onConnectError);
 
     return () => {
       socket.off("onlineUsers", onOnlineUsers);
       socket.off("newMessage", onNewMessage);
-      socket.off("connect", onConnect);
+      socket.off("connect", pullLatestFromApi);
+      socket.off("reconnect", pullLatestFromApi);
       socket.off("connect_error", onConnectError);
     };
   }, [isAuthenticated, userProfile?._id, dispatch]);
